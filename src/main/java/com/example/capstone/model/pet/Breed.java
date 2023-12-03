@@ -13,4 +13,20 @@ public class Breed {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer breedId;
     private String breedName;
+
+    public Integer getBreedId() {
+        return breedId;
+    }
+
+    public void setBreedId(Integer breedId) {
+        this.breedId = breedId;
+    }
+
+    public String getBreedName() {
+        return breedName;
+    }
+
+    public void setBreedName(String breedName) {
+        this.breedName = breedName;
+    }
 }

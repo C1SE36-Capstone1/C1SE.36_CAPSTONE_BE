@@ -13,10 +13,10 @@ import java.util.List;
 @Repository
 public interface IPetRepository extends JpaRepository<Pet, Integer> {
 
-//    List<Pet> findByStatusTrue();
-//
-//    List<Pet> findByCategory(Breed breed);
-//
-//    Pet findByProductIdAndStatusTrue(Integer id);
+    List<Pet> findByStatusTrue();
+
+    List<Pet> findByBreed(Breed breed);
+
+    Pet findByPetIdAndStatusTrue(Integer id);
 
 }

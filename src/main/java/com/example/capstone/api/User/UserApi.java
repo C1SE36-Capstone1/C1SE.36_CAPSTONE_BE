@@ -13,6 +13,7 @@ import com.example.capstone.repository.Cart.ICartRepository;
 import com.example.capstone.repository.User.IRoleRepository;
 import com.example.capstone.repository.User.IUserRepository;
 import com.example.capstone.service.Impl.UserDetailsImpl;
+import com.example.capstone.util.ConverterMaxCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,7 +59,7 @@ public class UserApi {
         return  ResponseEntity.ok(userRepository.findByStatusTrue());
     }
 
-    @PostMapping("/signin")
+    @PostMapping("user/signin")
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -78,7 +79,7 @@ public class UserApi {
 
     }
 
-    @PostMapping("/signup")
+    @PostMapping("user/signup")
     public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest signupRequest) {
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
@@ -89,11 +90,15 @@ public class UserApi {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
         }
 
+        // Generate the next ID for the user
+        User userLimit = userRepository.limitUser();
+        signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
+
         // create new user account
         User user = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
                 signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(), signupRequest.getRegisterDate(),
+                signupRequest.getImage(), signupRequest.getRegisterDate(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(1, RoleName.USER));
@@ -118,11 +123,15 @@ public class UserApi {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
         }
 
+        // Generate the next ID for the user
+        User userLimit = userRepository.limitUser();
+        signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
+
         // create new admin account
         User admin = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
                 signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(), signupRequest.getRegisterDate(),
+                signupRequest.getImage(), signupRequest.getRegisterDate(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(2, RoleName.ADMIN));

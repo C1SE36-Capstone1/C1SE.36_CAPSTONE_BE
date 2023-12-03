@@ -61,6 +61,7 @@ public class ProductApi {
         return ResponseEntity.ok(productRepository.findById(id).get());
     }
 
+
     @PostMapping
     public ResponseEntity<Product> post(@RequestBody Product product) {
         if (productRepository.existsById(product.getProductId())) {
@@ -90,4 +91,6 @@ public class ProductApi {
         productRepository.save(p);
         return ResponseEntity.ok().build();
     }
+
+
 }

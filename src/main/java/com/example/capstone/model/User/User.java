@@ -17,6 +17,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
+    private String code;
     private String name;
     private String email;
     private String password;
@@ -35,7 +36,7 @@ public class User implements Serializable {
     private Set<Role> roles = new HashSet<>();
 
     public User(String name, String email, String password, String phone, String address, Boolean gender,
-                Boolean status, String image, LocalDate registerDate, String token) {
+                Boolean status, String image, LocalDate registerDate,String code, String token) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -45,6 +46,7 @@ public class User implements Serializable {
         this.status = status;
         this.image = image;
         this.registerDate = registerDate;
+        this.code = code;
         this.token = token;
     }
 
