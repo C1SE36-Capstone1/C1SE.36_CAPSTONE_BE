@@ -17,6 +17,7 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer petId;
+    private String code;
     private String name;
     private Date petAge;
     private Double price;

@@ -20,6 +20,7 @@ public class SignupRequest {
     private Boolean status;
     private String image;
     private LocalDate registerDate;
+    private String code;
 
     private Set<String> role;
 
