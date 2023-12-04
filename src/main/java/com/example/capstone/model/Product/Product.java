@@ -15,14 +15,14 @@ public class Product implements Serializable {
     private Integer productId;
     private String code;
     private String name;
-    private int quantity;
+    private Integer quantity;
     private Double price;
-    private int discount;
+    private Integer discount;
     private String image;
     private String description;
     private LocalDate enteredDate;
     private Boolean status;
-    private int sold;
+    private Integer sold;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")

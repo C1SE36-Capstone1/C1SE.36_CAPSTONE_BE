@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class OrderApi {
             amount += i.getProduct().getPrice();
         }
 
-        Order order = orderRepository.save(new Order(0, new Date(), amount, cart.getAddress(), cart.getPhone(), 0, userRepository.findByEmail(email).get()));
+        Order order = orderRepository.save(new Order(0, LocalDate.now(), amount, cart.getAddress(), cart.getPhone(), false, userRepository.findByEmail(email).get()));
 
         for (CartDetail i :items){
             OrderDetail orderDetail = new OrderDetail(0,i.getQuantity(),i.getPrice(), i.getProduct(),order, i.getPet());
@@ -99,7 +100,7 @@ public class OrderApi {
             return ResponseEntity.notFound().build();
         }
         Order order = orderRepository.findById(id).get();
-        order.setStatus(3);
+        order.setStatus(false);
         orderRepository.save(order);
         return ResponseEntity.ok().build();
     }
@@ -109,7 +110,7 @@ public class OrderApi {
             return ResponseEntity.notFound().build();
         }
         Order order = orderRepository.findById(id).get();
-        order.setStatus(1);
+        order.setStatus(true);
         orderRepository.save(order);
         //senMail.sendMailOrderDeliver(order);
         return ResponseEntity.ok().build();
@@ -121,7 +122,7 @@ public class OrderApi {
             return ResponseEntity.notFound().build();
         }
         Order order = orderRepository.findById(id).get();
-        order.setStatus(2);
+        order.setStatus(true);
         orderRepository.save(order);
         //senMail.sendMailOrderSuccess(order);
         updateProduct(order);
