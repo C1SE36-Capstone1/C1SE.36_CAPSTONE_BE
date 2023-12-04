@@ -91,8 +91,8 @@ public class UserApi {
         }
 
         // Generate the next ID for the user
-        User userLimit = userRepository.limitUser();
-        signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
+        //User userLimit = userRepository.limitUser();
+        //signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
         // create new user account
         User user = new User(signupRequest.getName(), signupRequest.getEmail(),

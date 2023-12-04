@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -16,11 +17,11 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ordersId;
-    private Date orderDate;
+    private LocalDate orderDate;
     private Double amount;
     private String address;
     private String phone;
-    private Integer status;
+    private Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "userId")

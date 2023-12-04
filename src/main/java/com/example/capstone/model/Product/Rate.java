@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -22,7 +23,7 @@ public class Rate implements Serializable {
     private Integer id;
     private Double rating;
     private String comment;
-    private Date rateDate;
+    private LocalDate rateDate;
 
     @ManyToOne
     @JoinColumn(name = "userId")
