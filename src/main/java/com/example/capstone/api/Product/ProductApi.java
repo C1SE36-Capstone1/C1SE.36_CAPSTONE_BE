@@ -35,23 +35,6 @@ public class ProductApi {
         return ResponseEntity.ok(productRepository.findByCategory(c));
     }
 
-    @GetMapping("top-sold/{categoryId}")
-    public ResponseEntity<List<Product>> findTopSoldProductsByCategory(@PathVariable Integer id) {
-        if (!productRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        Category c = categoryRepository.findById(id).get();
-        return ResponseEntity.ok(productRepository.findAllByCategoryAndSoldDesc(c));
-    }
-
-//    @GetMapping("top-sold/{categoryId}")
-//    public ResponseEntity<List<Product>> findTopPriceProductsByCategory(@PathVariable Integer id) {
-//        if (!productRepository.existsById(id)) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        Category c = categoryRepository.findById(id).get();
-//        return ResponseEntity.ok(productRepository.findAllByCategoryAndSoldDesc(c));
-//    }
 
     @GetMapping("{id}")
     public ResponseEntity<Product> getById(@PathVariable("id") Integer id) {
@@ -61,7 +44,38 @@ public class ProductApi {
         return ResponseEntity.ok(productRepository.findById(id).get());
     }
 
+    @GetMapping("top-discount")
+    public ResponseEntity<List<Product>> top10discount(){
+        return ResponseEntity.ok(productRepository.topdiscount());
+    }
 
+    @GetMapping("top-sold")
+    public ResponseEntity<List<Product>> top10sold(){
+        return ResponseEntity.ok(productRepository.findTop10BySoldDesc());
+    }
+
+    @GetMapping("top-entered-date")
+    public ResponseEntity<List<Product>> top10enteredDate(){
+        return ResponseEntity.ok(productRepository.findTop10ByEnteredDateDesc());
+    }
+
+    /**
+     * {
+     *     "productId":51,
+     *     "name": "test",
+     *     "quantity": 100,
+     *     "price": 100000,
+     *     "discount": 0,
+     *     "image":"",
+     *     "description": "",
+     *     "sold": 0,
+     *     "code": "PR-0101",
+     *     "status":true,
+     *     "category": {
+     *         "categoryId":1
+     *     }
+     * }
+     * */
     @PostMapping
     public ResponseEntity<Product> post(@RequestBody Product product) {
         if (productRepository.existsById(product.getProductId())) {

@@ -50,28 +50,48 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http.csrf()
+//                .disable()
+//                .authorizeRequests()
+//                .antMatchers("api/products/**",
+//                        "api/categories/**",
+//                        "api/rates/**",
+//                        "api/send-mail/**",
+//                        "api/cart/user/**",
+//                        "api/orders/user/**",
+//                        "api/favorites/email/**",
+//                        "api/cartDetail/**",
+//                        "api/auth/**",
+//                        "forgot-password",
+//                        "api/notification/**")
+//                .permitAll()
+//                .antMatchers("api/admin/**", "api/product/**").hasRole("ADMIN")
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .cors()
+//                .and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(unauthorizedHandler)
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//        http.addFilterBefore(authenticationJwTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("api/products",
-                        "api/products/bestseller",
-                        "api/products/latest",
-                        "api/products/rated",
-                        "api/products/suggest/**",
-                        "api/products/category/**",
-                        "api/products/{id}",
-                        "api/categories", "api/categories/{id}",
+                .antMatchers("api/products/**",
+                        "api/categories/**",
                         "api/rates/**",
                         "api/send-mail/**",
                         "api/cart/user/**",
                         "api/orders/user/**",
                         "api/favorites/email/**",
                         "api/cartDetail/**",
-                        "api/auth/email/**",
-                        "api/auth/signin/**",
-                        "api/auth/signin/**",
-                        "api/auth/send-mail-forgot-password-token",
+                        "api/auth/**",
                         "forgot-password",
                         "api/notification/**")
                 .permitAll();
