@@ -1,6 +1,7 @@
 package com.example.capstone.util;
 
 public class ConverterMaxCode {
+
     public static String generateNextId(String currentId) {
         String prefix = currentId.split("-")[0];
         int number = Integer.parseInt(currentId.split("-")[1]);

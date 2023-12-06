@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("api/auth/")
 public class UserApi {
 
     @Autowired
@@ -74,7 +75,7 @@ public class UserApi {
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getName(),
                 userDetails.getEmail(), userDetails.getPassword(), userDetails.getPhone(), userDetails.getAddress(),
-                userDetails.getGender(), userDetails.getStatus(), userDetails.getImage(), userDetails.getRegisterDate(),
+                userDetails.getGender(), userDetails.getStatus(), userDetails.getImage(),LocalDate.now(),
                 roles));
 
     }
@@ -91,14 +92,14 @@ public class UserApi {
         }
 
         // Generate the next ID for the user
-        //User userLimit = userRepository.limitUser();
-        //signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
+        User userLimit = userRepository.limitUser();
+        signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
         // create new user account
         User user = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
                 signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(), signupRequest.getRegisterDate(), signupRequest.getCode(),
+                signupRequest.getImage(), LocalDate.now(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(1, RoleName.USER));
@@ -112,7 +113,7 @@ public class UserApi {
 
     }
 
-    @PostMapping("admin/signup")
+    @PostMapping("admin/signup/createAdmin")
     public ResponseEntity<?> registerAdmin(@Validated @RequestBody SignupRequest signupRequest) {
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
@@ -131,16 +132,43 @@ public class UserApi {
         User admin = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
                 signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(), signupRequest.getRegisterDate(), signupRequest.getCode(),
+                signupRequest.getImage(),LocalDate.now(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(2, RoleName.ADMIN));
 
-
         admin.setRoles(roles);
         userRepository.save(admin);
-        Cart c = new Cart(0, 0.0, admin.getAddress(), admin.getPhone(), admin);
-        cartRepository.save(c);
+        return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
+
+    }
+
+    @PostMapping("admin/signup/createVet")
+    public ResponseEntity<?> registerVeterinarian(@Validated @RequestBody SignupRequest signupRequest) {
+
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
+        }
+
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
+        }
+
+        // Generate the next ID for the user
+        User userLimit = userRepository.limitUser();
+        signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
+
+        // create new admin account
+        User vet = new User(signupRequest.getName(), signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
+                signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
+                signupRequest.getImage(),LocalDate.now(), signupRequest.getCode(),
+                jwtUtils.doGenerateToken(signupRequest.getEmail()));
+        Set<Role> roles = new HashSet<>();
+        roles.add(new Role(3, RoleName.VETERINARIAN));
+
+        vet.setRoles(roles);
+        userRepository.save(vet);
         return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
 
     }
