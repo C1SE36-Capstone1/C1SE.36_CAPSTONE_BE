@@ -21,7 +21,7 @@ public class CartDetail implements Serializable{
     private int quantity;
     private Double price;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "productId")
     private Product product;
 
@@ -29,7 +29,7 @@ public class CartDetail implements Serializable{
     @JoinColumn(name = "cartId")
     private Cart cart;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "petId")
     private Pet pet;
 }

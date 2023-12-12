@@ -30,13 +30,13 @@ public class CategoryApi {
         return ResponseEntity.ok(categoryRepository.findById(id).get());
     }
 
-    @PostMapping
-    public ResponseEntity<Category> post(@RequestBody Category category){
-        if(categoryRepository.existsById(category.getCategoryId())){
-            return ResponseEntity.badRequest().build() ;
+        @PostMapping
+        public ResponseEntity<Category> post(@RequestBody Category category){
+            if(categoryRepository.existsById(category.getCategoryId())){
+                return ResponseEntity.badRequest().build() ;
+            }
+            return ResponseEntity.ok(categoryRepository.save(category));
         }
-        return ResponseEntity.ok(categoryRepository.save(category));
-    }
 
     //Update tại vị trí id
     @PutMapping("{id}")
