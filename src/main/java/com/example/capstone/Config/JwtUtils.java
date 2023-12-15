@@ -16,9 +16,9 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private String jwtSecrect = "secretkey";
+    private String jwtSecrect = "secretkey.c1se.36";
 
-    private int jwtExpirationMs = 86400000;
+    private int jwtExpirationMs = 1 * 60 * 1000;
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -27,18 +27,19 @@ public class JwtUtils {
         Date dateJwtDate = new Date();
         dateJwtDate.getTime();
 
-        return Jwts.builder().setSubject((userPrincipal.getEmail())).setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+        return Jwts.builder().setSubject((userPrincipal.getEmail()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs * 100))
                 .signWith(SignatureAlgorithm.HS512, jwtSecrect).compact();
     }
 
     public String doGenerateToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ADMIN")));
 
-        return Jwts.builder().setClaims(claims).setIssuer("http://devglan.com")
+        return Jwts.builder().setClaims(claims).setIssuer("http://petgiggle.com")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS256, jwtSecrect).compact();
     }
 
