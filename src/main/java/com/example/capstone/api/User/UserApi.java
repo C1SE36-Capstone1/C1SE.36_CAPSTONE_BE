@@ -26,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,8 +99,6 @@ public class UserApi {
         // create new user account
         User user = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
-                signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(), LocalDate.now(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(1, RoleName.USER));
@@ -131,8 +130,6 @@ public class UserApi {
         // create new admin account
         User admin = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
-                signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(),LocalDate.now(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(2, RoleName.ADMIN));
@@ -161,8 +158,6 @@ public class UserApi {
         // create new admin account
         User vet = new User(signupRequest.getName(), signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
-                signupRequest.getAddress(), signupRequest.getGender(), signupRequest.getStatus(),
-                signupRequest.getImage(),LocalDate.now(), signupRequest.getCode(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(3, RoleName.VETERINARIAN));
