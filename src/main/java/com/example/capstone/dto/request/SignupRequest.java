@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -15,13 +16,7 @@ public class SignupRequest {
     private String email;
     private String password;
     private String phone;
-    private String address;
-    private Boolean gender;
-    private Boolean status;
-    private String image;
-    private LocalDate registerDate;
     private String code;
-
     private Set<String> role;
 
 }
