@@ -1,5 +1,6 @@
 package com.example.capstone.model.User;
 
+import com.example.capstone.model.Cart.Cart;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class User implements Serializable {
     @Size(max=100, message="Name cannot exceed 100 characters")
     private String name;
 
+
     @Email(message="Invalid email address")
     @Size(max=100, message="Email cannot exceed 100 characters")
     private String email;
@@ -46,6 +48,10 @@ public class User implements Serializable {
     private LocalDate registerDate;
     private Boolean status;
     private String token;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

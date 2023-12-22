@@ -97,8 +97,10 @@ public class UserApi {
         signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
         // create new user account
-        User user = new User(signupRequest.getName(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
+        User user = new User(signupRequest.getName(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()),
+                signupRequest.getPhone(),
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(1, RoleName.USER));
@@ -165,7 +167,23 @@ public class UserApi {
         vet.setRoles(roles);
         userRepository.save(vet);
         return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
-
     }
 
+    @PutMapping("user/{id}")
+    public ResponseEntity<?> put(@PathVariable("id") Integer id, @RequestBody User user) {
+        try {
+            // Kiểm tra xem người dùng có tồn tại hay không
+            if(!userRepository.existsById(id)){
+                return ResponseEntity.notFound().build();
+            }
+            if (userRepository.existsByEmail(user.getEmail())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!")+ "Email: "+ user.getEmail());
+            }
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin người dùng thành công"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Lỗi khi cập nhật thông tin người dùng: " + e.getMessage()));
+        }
+    }
 }
