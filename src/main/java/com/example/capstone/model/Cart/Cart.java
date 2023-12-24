@@ -1,6 +1,7 @@
 package com.example.capstone.model.Cart;
 
 import com.example.capstone.model.User.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +21,7 @@ public class Cart implements Serializable {
     private String address;
     private String phone;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    @JsonBackReference
+    @OneToOne(mappedBy = "cart", cascade = CascadeType.ALL)
     private User user;
 }

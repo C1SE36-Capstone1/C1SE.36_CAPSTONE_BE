@@ -1,10 +1,9 @@
 package com.example.capstone.Config;
 
-import com.example.capstone.service.Impl.UserDetailsImpl;
+import com.example.capstone.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,7 @@ public class JwtUtils {
 
     private String jwtSecrect = "secretkey.c1se.36";
 
-    private int jwtExpirationMs = 1 * 60 * 1000;
+    private int jwtExpirationMs = 5 * 60 * 60 * 1000;
 
     public String generateJwtToken(Authentication authentication) {
 

@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 
 @SuppressWarnings("serial")
 @Data
@@ -18,18 +19,19 @@ public class CartDetail implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cartDetailId;
+
+    @Min(1)
     private int quantity;
-    private Double price;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "cartId")
-    private Cart cart;
+    private Integer cartId;
 
-    @OneToOne
-    @JoinColumn(name = "petId")
+    private Boolean status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pet_id")
     private Pet pet;
 }

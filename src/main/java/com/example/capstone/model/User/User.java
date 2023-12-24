@@ -1,5 +1,7 @@
 package com.example.capstone.model.User;
 
+import com.example.capstone.model.Cart.Cart;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +30,7 @@ public class User implements Serializable {
     @Size(max=100, message="Name cannot exceed 100 characters")
     private String name;
 
+
     @Email(message="Invalid email address")
     @Size(max=100, message="Email cannot exceed 100 characters")
     private String email;
@@ -41,11 +44,14 @@ public class User implements Serializable {
 
     private Date birthdate;
     private Boolean gender;
-
     private String image;
     private LocalDate registerDate;
     private Boolean status;
     private String token;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -53,11 +59,16 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public User(String name, String email, String password, String phone, String token) {
+    public User(String name,String code, String email, String password, String phone,Boolean status,
+                //LocalDate registerDate,
+                String token) {
         this.name = name;
+        this.code = code;
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.status = status;
+        //this.registerDate = registerDate;
         this.token = token;
     }
 

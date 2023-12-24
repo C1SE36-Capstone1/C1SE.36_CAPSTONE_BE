@@ -1,35 +1,34 @@
 package com.example.capstone.api.User;
 
 import com.example.capstone.Config.JwtUtils;
+import com.example.capstone.dto.UserInfo;
 import com.example.capstone.dto.reponse.JwtResponse;
 import com.example.capstone.dto.reponse.MessageResponse;
 import com.example.capstone.dto.request.LoginRequest;
 import com.example.capstone.dto.request.SignupRequest;
-import com.example.capstone.model.Cart.Cart;
 import com.example.capstone.model.User.Role;
 import com.example.capstone.model.User.RoleName;
 import com.example.capstone.model.User.User;
 import com.example.capstone.repository.Cart.ICartRepository;
 import com.example.capstone.repository.User.IRoleRepository;
 import com.example.capstone.repository.User.IUserRepository;
-import com.example.capstone.service.Impl.UserDetailsImpl;
+import com.example.capstone.service.UserDetailsImpl;
+import com.example.capstone.service.Impl.UserService;
 import com.example.capstone.util.ConverterMaxCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin("*")
@@ -43,6 +42,8 @@ public class UserApi {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    UserService userService;
     @Autowired
     ICartRepository cartRepository;
 
@@ -61,8 +62,16 @@ public class UserApi {
         return  ResponseEntity.ok(userRepository.findByStatusTrue());
     }
 
+
+    /**
+     * API: http://localhost:8080/api/auth/user/signin
+    {
+        "email":"user15@example.com",
+        "password": "123"
+    }
+    */
     @PostMapping("user/signin")
-    public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -81,91 +90,193 @@ public class UserApi {
 
     }
 
-    @PostMapping("user/signup")
-    public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest signupRequest) {
+    /**
+     * API: http://localhost:8080/api/auth/user/create
+     * Đăng kí tài khoản cho User
+    {
+        "name": "user15",
+        "email": "user15@example.com",
+        "password": "123",
+        "phone": "1234567890"
+    }
+    */
+    @PostMapping("user/create")
+    public ResponseEntity<?> createUser(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(
+                    error -> {
+                        String fieldName = error.getField();
+                        String errorMessage = error.getDefaultMessage();
+                        errors.put(fieldName, errorMessage);
+                    });
+            return ResponseEntity.badRequest().body(errors);
+        }
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
         }
-
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
         }
 
-        // Generate the next ID for the user
         User userLimit = userRepository.limitUser();
         signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
-        // create new user account
-        User user = new User(signupRequest.getName(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
+        User user = new User(signupRequest.getName(),
+                signupRequest.getCode(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()),
+                signupRequest.getPhone(),
+                true,
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
+
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(1, RoleName.USER));
 
+        UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
+                user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
+                user.getImage(),user.getStatus(),user.getToken(),user.getCart(),roles);
 
-        user.setRoles(roles);
-        userRepository.save(user);
-        Cart c = new Cart(0, 0.0, user.getAddress(), user.getPhone(), user);
-        cartRepository.save(c);
-        return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
-
+        userService.saveUser(userInfo);
+        return  ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
     }
 
-    @PostMapping("admin/signup/createAdmin")
-    public ResponseEntity<?> registerAdmin(@Validated @RequestBody SignupRequest signupRequest) {
+
+    @PostMapping("admin/create")
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(
+                    error -> {
+                        String fieldName = error.getField();
+                        String errorMessage = error.getDefaultMessage();
+                        errors.put(fieldName, errorMessage);
+                    });
+            return ResponseEntity.badRequest().body(errors);
+        }
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
         }
-
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
         }
 
-        // Generate the next ID for the user
         User userLimit = userRepository.limitUser();
         signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
-        // create new admin account
-        User admin = new User(signupRequest.getName(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
+        User user = new User(signupRequest.getName(),
+                signupRequest.getCode(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()),
+                signupRequest.getPhone(),
+                true,
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
+
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(2, RoleName.ADMIN));
+        roles.add(new Role(1, RoleName.ADMIN));
 
-        admin.setRoles(roles);
-        userRepository.save(admin);
-        return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
+        UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
+                user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
+                user.getImage(),user.getStatus(),user.getToken(),user.getCart(),roles);
 
+        userService.saveUser(userInfo);
+        return  ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
     }
 
-    @PostMapping("admin/signup/createVet")
-    public ResponseEntity<?> registerVeterinarian(@Validated @RequestBody SignupRequest signupRequest) {
+    @PostMapping("admin/create/veterinarian")
+    public ResponseEntity<?> create(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(
+                    error -> {
+                        String fieldName = error.getField();
+                        String errorMessage = error.getDefaultMessage();
+                        errors.put(fieldName, errorMessage);
+                    });
+            return ResponseEntity.badRequest().body(errors);
+        }
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
         }
-
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is alreadv in use!"));
         }
 
-        // Generate the next ID for the user
         User userLimit = userRepository.limitUser();
         signupRequest.setCode(ConverterMaxCode.generateNextId(userLimit.getCode()));
 
-        // create new admin account
-        User vet = new User(signupRequest.getName(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()), signupRequest.getPhone(),
+        User user = new User(signupRequest.getName(),
+                signupRequest.getCode(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()),
+                signupRequest.getPhone(),
+                true,
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
+
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(3, RoleName.VETERINARIAN));
+        roles.add(new Role(1, RoleName.VETERINARIAN));
 
-        vet.setRoles(roles);
-        userRepository.save(vet);
-        return ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
+        UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
+                user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
+                user.getImage(),user.getStatus(),user.getToken(),user.getCart(),roles);
 
+        userService.saveUser(userInfo);
+        return  ResponseEntity.ok(new MessageResponse("Đăng kí thành công"));
     }
 
+    /**
+     * API: http://localhost:8080/api/auth/user/{id}
+     * Chỉnh sửa thông tin cá nhân (Edit personal information)
+     {
+        "name":"Anh Quoc đẹp chai",
+        "image": "https://firebasestorage.googleapis.com/v0/b/capstone-1-398205.appspot.com/o/IMG%2Fstudent.jpg?alt=media&token=4b6571a2-1eea-4c15-940e-ffa391187ae3",
+        "address": "123 Main St",
+        "email": "user15@example.com",
+        "password": "123456",
+        "phone": "0788518002",
+        "gender":1,
+        "birthdate":"2002-06-01"
+        // "cart":{
+        //     "cartId": 13,
+        //     "address": "123 Main St",
+        //     "phone": "1234567890",
+        //     "amount": 0.0
+        // }
+    }
+
+     */
+    @PutMapping("user/{id}")
+    public ResponseEntity<?> put(@PathVariable("id") Integer id, @RequestBody UserInfo userUpdate, BindingResult bindingResult) {
+        try{
+            if (bindingResult.hasErrors()) {
+                Map<String, String> errors = new HashMap<>();
+                bindingResult.getFieldErrors().forEach(
+                        error -> {
+                            String fieldName = error.getField();
+                            String errorMessage = error.getDefaultMessage();
+                            errors.put(fieldName, errorMessage);
+                        });
+                return ResponseEntity.badRequest().body(errors);
+            }else{
+
+                userService.update(userUpdate,id);
+            }
+            return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin người dùng thành công"));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(new MessageResponse("Lỗi khi cập nhật thông tin người dùng: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * API: http://localhost:8080/api/auth/admin/delete/user/{id}
+     * Xóa người dùng
+    */
+    @DeleteMapping("admin/delete/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
+        userService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

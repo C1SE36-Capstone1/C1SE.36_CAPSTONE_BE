@@ -1,6 +1,5 @@
 package com.example.capstone.model.Product;
 
-import com.example.capstone.model.Order.OrderDetail;
 import com.example.capstone.model.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 @SuppressWarnings("serial")
 @Data
@@ -33,7 +31,4 @@ public class Rate implements Serializable {
     @JoinColumn(name = "productId")
     private Product product;
 
-    @OneToOne
-    @JoinColumn(name = "orderDetailId")
-    private OrderDetail orderDetail;
 }
