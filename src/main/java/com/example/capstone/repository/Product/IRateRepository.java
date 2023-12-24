@@ -1,6 +1,5 @@
 package com.example.capstone.repository.Product;
 
-import com.example.capstone.model.Order.OrderDetail;
 import com.example.capstone.model.Product.Product;
 import com.example.capstone.model.Product.Rate;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +13,4 @@ public interface IRateRepository extends JpaRepository<Rate, Integer> {
 
     List<Rate> findByProductOrderByIdDesc(Product product);
 
-    Rate findByOrderDetail(OrderDetail orderDetail);
 }

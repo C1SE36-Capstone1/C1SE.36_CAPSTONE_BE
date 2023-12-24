@@ -1,5 +1,6 @@
 package com.example.capstone.dto.request;
 
+import com.example.capstone.model.Cart.Cart;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,12 @@ import java.util.Set;
 @NoArgsConstructor
 public class SignupRequest {
     private String name;
+    private String code;
     private String email;
     private String password;
     private String phone;
-    private String code;
+    private Boolean status;
+    private Cart cart;
     private Set<String> role;
 
 }

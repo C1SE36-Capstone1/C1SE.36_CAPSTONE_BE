@@ -1,19 +1,21 @@
 package com.example.capstone.api.Cart;
 
+import com.example.capstone.dto.CartWithDetail;
 import com.example.capstone.model.Cart.Cart;
 import com.example.capstone.model.Cart.CartDetail;
-import com.example.capstone.model.Product.Product;
 import com.example.capstone.repository.Cart.ICartDetailRepository;
 import com.example.capstone.repository.Cart.ICartRepository;
 import com.example.capstone.repository.Product.IProductRepository;
 import com.example.capstone.repository.pet.IPetRepository;
+import com.example.capstone.service.Impl.CartDetailService;
+import com.example.capstone.service.Impl.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -30,68 +32,118 @@ public class CartDetailApi {
     ICartDetailRepository cartDetailRepository;
 
     @Autowired
+    CartService cartService;
+
+    @Autowired
     ICartRepository cartRepository;
 
-    @GetMapping("cart/{id}")
-    public ResponseEntity<List<CartDetail>> getbyCartId(@PathVariable("id") Integer id){
-        if(!cartRepository.existsById(id)){
-            return ResponseEntity.notFound().build();
+    @Autowired
+    CartDetailService cartDetailService;
+
+//    @GetMapping("cart/{id}")
+//    public ResponseEntity<List<CartDetail>> getbyCartId(@PathVariable("id") Integer id){
+//        if(!cartRepository.existsById(id)){
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.ok(cartDetailRepository.findByCart(cartRepository.findById(id).get()));
+//    }
+
+    /**
+     * API: http://localhost:8080/api/cartDetail/cart/add/{productId}
+     * Cho sản phẩm vào giỏ hàng
+     * Có sử dụng token để xác minh người dùng
+     */
+    @GetMapping("/cart/add/{productId}")
+    public ResponseEntity<?> addProductToCart(@PathVariable("productId") Integer productId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
         }
-        return ResponseEntity.ok(cartDetailRepository.findByCart(cartRepository.findById(id).get()));
+
+        String email = authentication.getName();
+        Cart cart = cartService.findByUsername(email);
+
+        if (cart == null) {
+            return new ResponseEntity<>("Không tìm thấy giỏ hàng", HttpStatus.NOT_FOUND);
+        }
+
+        CartDetail cartDetail = cartDetailService.checkAvailable(productId, cart.getCartId());
+        if (cartDetail == null) {
+            cartDetailService.addProduct(productId, cart.getCartId());
+        } else {
+            cartDetail.setQuantity(cartDetail.getQuantity() + 1);
+            cartDetailService.updateQuantity(cartDetail);
+        }
+
+        double totalAmount = cartDetailService.findByCartId(cart.getCartId())
+                .stream()
+                .mapToDouble(detail -> detail.getProduct().getPrice() * detail.getQuantity())
+                .sum();
+
+        cart.setAmount(totalAmount);
+        cartService.update(cart);
+
+        CartWithDetail cartWithDetail = new CartWithDetail(cart, cartDetailService.findByCartId(cart.getCartId()));
+        return new ResponseEntity<>(cartWithDetail, HttpStatus.OK);
     }
 
-    /*
+
+    /**
+     * API: http://localhost:8080/api/cartDetail/update
     {
-        "cart": {
-            "cartId": 2
+    "cart":{
+        "cartId":29,
+        "amount": 2200000,
+        "address": "123 Đường ABC", // Địa chỉ mới
+        "phone": "0123456789" // Số điện thoại mới
     },
-        "product": {
-            "productId": 4
+    "cartDetailList":[
+        {
+            "cartDetailId": 17, // ID chi tiết giỏ hàng
+            "quantity": 10, // Số lượng cập nhật
+            "product": {
+                "productId": 3  // ID sản phẩm
+                // Các thông tin khác của sản phẩm nếu cần
+            },
+            "status": true, // Trạng thái của sản phẩm trong giỏ hàng
+            "cartId": 29 // ID giỏ hàng
+        },
+        {
+            "cartDetailId": 17, // ID chi tiết giỏ hàng
+            "quantity": 10, // Số lượng cập nhật
+            "product": {
+                "productId": 10  // ID sản phẩm
+                // Các thông tin khác của sản phẩm nếu cần
+            },
+            "status": true, // Trạng thái của sản phẩm trong giỏ hàng
+            "cartId": 29 // ID giỏ hàng
         }
-    }
-      */
-    @PostMapping()
-    public ResponseEntity<CartDetail> post(@RequestBody CartDetail detail) {
-        if (!cartRepository.existsById(detail.getCart().getCartId())) {
-            return ResponseEntity.notFound().build();
-        }
-        boolean check = false;
-        List<Product> listP = productRepository.findByStatusTrue();
-        Product product = productRepository.findByProductIdAndStatusTrue(detail.getProduct().getProductId());
-        for (Product p : listP) {
-            if (p.getProductId() == product.getProductId()) {
-                check = true;
+    ]
+}
+    */
+    @PutMapping("/update")
+    public ResponseEntity<?> updateCart(@RequestBody CartWithDetail cartWithDetail) {
+        Cart cart = cartWithDetail.getCart();
+        List<CartDetail> cartDetailList = cartWithDetail.getCartDetailList();
+
+        cartDetailList.forEach(cartDetail -> {
+            if (cartDetail.getQuantity() > 0) {
+                cartDetailService.update(cartDetail);
+            } else {
+                cartDetailService.deleteById(cartDetail.getCartDetailId());
             }
-        };
-        if (!check) {
-            return ResponseEntity.notFound().build();
-        }
-        List<CartDetail> listD = cartDetailRepository
-                .findByCart(cartRepository.findById(detail.getCart().getCartId()).get());
-        for (CartDetail item : listD) {
-            if (item.getProduct().getProductId() == detail.getProduct().getProductId()) {
-                item.setQuantity(item.getProduct().getQuantity() + 1);
-                item.setPrice(item.getProduct().getPrice() + detail.getProduct().getPrice());
-                return ResponseEntity.ok(cartDetailRepository.save(item));
-            }
-        }
-        return ResponseEntity.ok(cartDetailRepository.save(detail));
+        });
+
+        cartService.update(cart);
+        return ResponseEntity.ok("Cập nhật giỏ hàng thành công");
     }
 
-    @PutMapping()
-    public ResponseEntity<CartDetail> put(@RequestBody CartDetail detail) {
-        if (!cartRepository.existsById(detail.getCart().getCartId())) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(cartDetailRepository.save(detail));
-    }
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
-        if (!cartDetailRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        cartDetailRepository.deleteById(id);
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("{id}")
+//    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+//        if (!cartDetailRepository.existsById(id)) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        cartDetailRepository.deleteById(id);
+//        return ResponseEntity.ok().build();
+//    }
 }

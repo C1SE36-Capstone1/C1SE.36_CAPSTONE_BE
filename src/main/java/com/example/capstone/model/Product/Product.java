@@ -1,4 +1,5 @@
 package com.example.capstone.model.Product;
+import com.example.capstone.model.User.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,6 +24,11 @@ public class Product implements Serializable {
     private LocalDate enteredDate;
     private Boolean status;
     private Integer sold;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
+
 
     @ManyToOne
     @JoinColumn(name = "categoryId")

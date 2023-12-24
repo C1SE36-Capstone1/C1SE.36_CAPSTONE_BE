@@ -1,4 +1,4 @@
-package com.example.capstone.service.Impl;
+package com.example.capstone.service;
 
 import com.example.capstone.model.User.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;

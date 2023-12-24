@@ -1,7 +1,6 @@
 package com.example.capstone.api.Product;
 
 import com.example.capstone.model.Product.Rate;
-import com.example.capstone.repository.Order.IOrderDetailRepositoty;
 import com.example.capstone.repository.Product.IProductRepository;
 import com.example.capstone.repository.Product.IRateRepository;
 import com.example.capstone.repository.User.IUserRepository;
@@ -21,8 +20,6 @@ public class RateApi {
     @Autowired
     IUserRepository userRepository;
 
-    @Autowired
-    IOrderDetailRepositoty orderDetailRepositoty;
 
     @Autowired
     IProductRepository productRepository;
@@ -46,9 +43,6 @@ public class RateApi {
             return ResponseEntity.notFound().build();
         }
         if (!productRepository.existsById(rate.getProduct().getProductId())) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!orderDetailRepositoty.existsById(rate.getOrderDetail().getOrderDetailId())) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(rateRepository.save(rate));

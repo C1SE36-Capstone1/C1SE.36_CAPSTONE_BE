@@ -28,7 +28,9 @@ public class Pet {
     @Lob
     private String images;
 
-
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "breed_id")
