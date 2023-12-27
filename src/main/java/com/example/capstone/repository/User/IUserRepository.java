@@ -22,7 +22,7 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
-    User findByToken(String token);
+    Optional<User> findUserDetailByEmail(String email);
 
     @Query(value = "select * from  users order by code desc limit 1",nativeQuery = true)
     User limitUser();

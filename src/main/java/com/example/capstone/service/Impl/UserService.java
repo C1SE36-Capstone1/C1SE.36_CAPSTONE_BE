@@ -77,4 +77,9 @@ public class UserService implements IUserService {
             }
         }
     }
+
+    @Override
+    public  Optional<User> findUserDetailByEmail(String email) {
+        return this.userRepository.findUserDetailByEmail(email);
+    }
 }

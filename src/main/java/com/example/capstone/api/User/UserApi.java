@@ -62,6 +62,24 @@ public class UserApi {
         return  ResponseEntity.ok(userRepository.findByStatusTrue());
     }
 
+    @GetMapping("/detail")
+    public ResponseEntity<User> getDetail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        String email = authentication.getName();
+        Optional<User> userOptional = userService.findUserDetailByEmail(email);
+
+        if (!userOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        User userDetail = userOptional.get();
+
+        return ResponseEntity.ok(userDetail);
+    }
 
     /**
      * API: http://localhost:8080/api/auth/user/signin
