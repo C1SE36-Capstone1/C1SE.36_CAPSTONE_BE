@@ -18,10 +18,10 @@ public class Favorite implements Serializable {
     private Integer favoriteId;
 
     @ManyToOne()
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "product_id")
     private Product product;
 }
