@@ -20,9 +20,13 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer cartId;
-    private Double totalAmount;
+    private int totalAmount;
     @OneToMany
     private Set<CartDetail> cartDetails = new LinkedHashSet<>();
     private String tnxRef;
     private Boolean isPaid;
+
+    public boolean isPaid() {
+        return false;
+    }
 }

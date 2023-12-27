@@ -5,7 +5,10 @@ import com.example.capstone.repository.Product.IProductRepository;
 import com.example.capstone.repository.Product.IRateRepository;
 import com.example.capstone.repository.User.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +41,13 @@ public class RateApi {
     }
 
     @PostMapping
-    public ResponseEntity<Rate> post(@RequestBody Rate rate) {
+    public ResponseEntity<?> post(@RequestBody Rate rate) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
+        }
+
+        String email = authentication.getName();
         if (!userRepository.existsById(rate.getUser().getUserId())) {
             return ResponseEntity.notFound().build();
         }

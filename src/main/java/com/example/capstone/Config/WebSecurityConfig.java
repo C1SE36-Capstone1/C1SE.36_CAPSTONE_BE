@@ -1,5 +1,7 @@
 package com.example.capstone.Config;
 
+import com.example.capstone.service.IEmailService;
+import com.example.capstone.service.Impl.EmailService;
 import com.example.capstone.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -67,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "api/notification/**")
                 .permitAll();
 
-        http.authorizeRequests().antMatchers("api/orderDetail/**", "api/cart/**").access("hasRole('USER')");
+        http.authorizeRequests().antMatchers("api/payment/**", "api/cart/**").access("hasRole('USER')");
 
         http.authorizeRequests().antMatchers("api/orderDetail/**", "api/cart/**", "api/statistical/**", "api/auth/**").access("hasRole('ADMIN')");
 
