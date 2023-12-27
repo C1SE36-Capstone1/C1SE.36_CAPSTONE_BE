@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -52,6 +53,11 @@ public class UserService implements IUserService {
     @Override
     public void update(UserInfo userInfo, Integer id) {
 
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override

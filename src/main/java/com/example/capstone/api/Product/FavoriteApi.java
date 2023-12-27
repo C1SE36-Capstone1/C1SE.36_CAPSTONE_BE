@@ -9,6 +9,8 @@ import com.example.capstone.model.User.User;
 import com.example.capstone.repository.Product.IFavoriteRepository;
 import com.example.capstone.repository.Product.IProductRepository;
 import com.example.capstone.repository.User.IUserRepository;
+import com.example.capstone.service.Impl.FavoriteService;
+import com.example.capstone.service.Impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
@@ -26,37 +29,43 @@ public class FavoriteApi {
     IFavoriteRepository favoriteRepository;
 
     @Autowired
-    IUserRepository userRepository;
+    UserService userService;
 
+    @Autowired
+    FavoriteService favoriteService;
     @Autowired
     IProductRepository productRepository;
 
-//    @GetMapping("/add/{productId}")
-//    public ResponseEntity<?> addProductToCart(@PathVariable("productId") Integer productId) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
-//            return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
-//        }
-//
-//        String email = authentication.getName();
-//
-//        CartDetail cartDetail = cartDetailService.checkAvailable(productId, cart.getCartId());
-//        if (cartDetail == null) {
-//            cartDetailService.addProduct(productId, cart.getCartId());
-//        } else {
-//            cartDetail.setQuantity(cartDetail.getQuantity() + 1);
-//            cartDetailService.updateQuantity(cartDetail);
-//        }
-//
-//        double totalAmount = cartDetailService.findByCartId(cart.getCartId())
-//                .stream()
-//                .mapToDouble(detail -> detail.getProduct().getPrice() * detail.getQuantity())
-//                .sum();
-//
-//        cart.setAmount(totalAmount);
-//        cartService.update(cart);
-//
-//        CartWithDetail cartWithDetail = new CartWithDetail(cart, cartDetailService.findByCartId(cart.getCartId()));
-//        return new ResponseEntity<>(cartWithDetail, HttpStatus.OK);
-//    }
+    @GetMapping("/add/{productId}")
+    public ResponseEntity<?> addProductToFavorite(@PathVariable("productId") Integer productId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
+        }
+
+        String email = authentication.getName();
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (!userOptional.isPresent()) {
+            return new ResponseEntity<>("Không tìm thấy người dùng", HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        if (favoriteService.checkProductExistInFavorites(productId, user.getUserId()).isPresent()) {
+            return new ResponseEntity<>("Sản phẩm đã tồn tại trong danh sách yêu thích", HttpStatus.CONFLICT);
+        }
+
+        favoriteService.addProductToFavorites(productId, user.getUserId());
+        return new ResponseEntity<>("Sản phẩm đã được thêm vào danh sách yêu thích", HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+        if(!favoriteRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        favoriteRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }
