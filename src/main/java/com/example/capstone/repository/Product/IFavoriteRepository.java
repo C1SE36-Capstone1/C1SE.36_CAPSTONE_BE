@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface IFavoriteRepository extends JpaRepository<Favorite, Integer> {
-
-    List<Favorite> findByUser(User user);
+public interface IFavoriteRepository extends JpaRepository<Favorite, Long> {
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM favorites WHERE user_id = :user_id")
+    List<Favorite> findByUserId(@Param("user_id") Long userId);
 
     Integer countByProduct(Product product);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM favorites WHERE product_id = :product_id AND user_id = :user_id")
-    Optional<Favorite> findByUserIdAndProductId(@Param("user_id") Integer userId,@Param("product_id") Integer productId);
+    Optional<Favorite> findByUserIdAndProductId(@Param("user_id") Long userId,@Param("product_id") Long productId);
 }

@@ -53,7 +53,7 @@ public class CartDetailApi {
         Cart cart = this.cartService.findByUsername(username);
         List<CartDetail> cartDetailList;
         if (cart != null) {
-            Integer id = cart.getCartId();
+            Long id = cart.getCartId();
             cartDetailList = this.cartDetailService.findByCartId(id);
         } else {
             cart = new Cart();
@@ -69,7 +69,7 @@ public class CartDetailApi {
      * Có sử dụng token để xác minh người dùng
      */
     @GetMapping("/cart/add/{productId}")
-    public ResponseEntity<?> addProductToCart(@PathVariable("productId") Integer productId) {
+    public ResponseEntity<?> addProductToCart(@PathVariable("productId") Long productId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
             return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
@@ -137,24 +137,23 @@ public class CartDetailApi {
 }
     */
     @PutMapping("/update")
-    public ResponseEntity<?> updateCart(@RequestBody CartWithDetail cartWithDetail) {
+    public ResponseEntity<CartWithDetail> updateCart(@RequestBody CartWithDetail cartWithDetail) {
         Cart cart = cartWithDetail.getCart();
+        this.cartService.update(cart);
         List<CartDetail> cartDetailList = cartWithDetail.getCartDetailList();
-
-        cartDetailList.forEach(cartDetail -> {
-            if (cartDetail.getQuantity() > 0) {
-                cartDetailService.update(cartDetail);
+        for (CartDetail cartDetail : cartDetailList) {
+            if(cartDetail.getQuantity()>0) {
+                cartDetail.setStatus(false);
+                this.cartDetailService.update(cartDetail);
             } else {
-                cartDetailService.deleteById(cartDetail.getCartDetailId());
+                this.cartDetailService.deleteById(cartDetail.getCartDetailId());
             }
-        });
-
-        cartService.update(cart);
-        return ResponseEntity.ok("Cập nhật giỏ hàng thành công");
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         if(!cartDetailRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }
@@ -170,7 +169,7 @@ public class CartDetailApi {
         int totalAmount = 0;
         this.cartService.update(cart);
         for (CartDetail cartDetail : cartDetailList) {
-            if (cartDetail.isStatus()) {
+            if (!cartDetail.isStatus()) {
                 totalAmount += cartDetail.getQuantity() * cartDetail.getProduct().getPrice();
                 details.add(cartDetail);
             }

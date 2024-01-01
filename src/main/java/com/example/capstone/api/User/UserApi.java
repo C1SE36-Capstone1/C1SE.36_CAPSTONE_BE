@@ -150,7 +150,7 @@ public class UserApi {
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
 
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(1, RoleName.USER));
+        roles.add(new Role(1L, RoleName.USER));
 
         UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
                 user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
@@ -193,7 +193,7 @@ public class UserApi {
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
 
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(1, RoleName.ADMIN));
+        roles.add(new Role(2L, RoleName.ADMIN));
 
         UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
                 user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
@@ -235,7 +235,7 @@ public class UserApi {
                 jwtUtils.doGenerateToken(signupRequest.getEmail()));
 
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(1, RoleName.VETERINARIAN));
+        roles.add(new Role(3L, RoleName.VETERINARIAN));
 
         UserInfo userInfo = new UserInfo(user.getUserId(), user.getCode(),user.getName(),
                 user.getEmail(),user.getPhone(),user.getPassword(), user.getAddress(), user.getBirthdate(), user.getGender(),
@@ -257,17 +257,11 @@ public class UserApi {
         "phone": "0788518002",
         "gender":1,
         "birthdate":"2002-06-01"
-        // "cart":{
-        //     "cartId": 13,
-        //     "address": "123 Main St",
-        //     "phone": "1234567890",
-        //     "amount": 0.0
-        // }
     }
 
      */
     @PutMapping("user/{id}")
-    public ResponseEntity<?> put(@PathVariable("id") Integer id, @RequestBody UserInfo userUpdate, BindingResult bindingResult) {
+    public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody UserInfo userUpdate, BindingResult bindingResult) {
         try{
             if (bindingResult.hasErrors()) {
                 Map<String, String> errors = new HashMap<>();
@@ -293,7 +287,7 @@ public class UserApi {
      * Xóa người dùng
     */
     @DeleteMapping("admin/delete/user/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -2,23 +2,21 @@ package com.example.capstone.dto;
 
 import com.example.capstone.model.Cart.Cart;
 import com.example.capstone.model.User.Role;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.netty.channel.unix.Errors;
+
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.validation.Errors;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
-
+import java.time.ZoneId;
 @Data
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    private Long userId;
 
     private String code;
 
@@ -65,22 +63,23 @@ public class UserInfo {
 
     private Set<Role> roles;
 
-//    public void validate(Object target, Errors errors) {
-//        UserInfo customerInfo = (UserInfo) target;
-//        if (!(customerInfo.birthdate == null)) {
-//            LocalDate today = LocalDate.now();
-//            LocalDate minAgeDate = today.minusYears(12);
-//            LocalDate maxAgeDate = today.minusYears(90);
-//            if (customerInfo.birthdate.toLocalDate().isAfter(minAgeDate)) {
-//                errors.rejectValue("dateOfBirth", "", "chưa đủ 12 tuổi");
-//            }
-//            if (customerInfo.birthdate.toLocalDate().isBefore(maxAgeDate)) {
-//                errors.rejectValue("dateOfBirth", "", "lớn hơn 90 tuổi");
-//            }
-//        }
-//    }
+    public void validate(Object target, Errors errors) {
+        UserInfo customerInfo = (UserInfo) target;
+        if (customerInfo.birthdate != null) {
+            LocalDate today = LocalDate.now();
+            LocalDate minAgeDate = today.minusYears(12);
+            LocalDate maxAgeDate = today.minusYears(90);
+            LocalDate birthdateLocal = customerInfo.birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (birthdateLocal.isAfter(minAgeDate)) {
+                errors.rejectValue("dateOfBirth", "", "Chưa đủ 12 tuổi");
+            }
+            if (birthdateLocal.isBefore(maxAgeDate)) {
+                errors.rejectValue("dateOfBirth", "", "Lớn hơn 90 tuổi");
+            }
+        }
+    }
 
-    public UserInfo(Integer userId, String code, String name, String email, String phone, String password, String address,
+    public UserInfo(Long userId, String code, String name, String email, String phone, String password, String address,
                     Date birthdate, Boolean gender, String image, Boolean status, String token, Cart cart, Set<Role> roles) {
         this.userId = userId;
         this.code = code;
@@ -98,11 +97,11 @@ public class UserInfo {
         this.roles = roles;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,11 +30,16 @@ public class FavoriteService implements IFavoriteService {
     }
 
     @Override
-    public Optional<Favorite> checkProductExistInFavorites(Integer productId, Integer userId) {
+    public List<Favorite> getFavoritesByUserId(Long userId) {
+        return this.favoriteRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Optional<Favorite> checkProductExistInFavorites(Long productId, Long userId) {
         return favoriteRepository.findByUserIdAndProductId(userId, productId);
     }
 
-    public void addProductToFavorites(Integer productId, Integer userId) {
+    public void addProductToFavorites(Long productId, Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Product> productOptional = productRepository.findById(productId);
 
@@ -54,7 +60,7 @@ public class FavoriteService implements IFavoriteService {
     }
 
     @Override
-    public Favorite findById(Integer id) {
+    public Favorite findById(Long id) {
         return null;
     }
 
@@ -64,7 +70,7 @@ public class FavoriteService implements IFavoriteService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
 
     }
 }

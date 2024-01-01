@@ -18,8 +18,8 @@ import java.util.Set;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer cartId;
+    private Long id;
+    private Long cartId;
     private int totalAmount;
     @OneToMany
     private Set<CartDetail> cartDetails = new LinkedHashSet<>();

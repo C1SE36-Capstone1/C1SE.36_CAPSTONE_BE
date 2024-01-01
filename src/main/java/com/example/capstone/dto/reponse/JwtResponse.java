@@ -15,7 +15,7 @@ import java.util.List;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
-    private Integer id;
+    private Long id;
     private String name;
     private String email;
     private String password;
@@ -28,7 +28,7 @@ public class JwtResponse {
 
     private List<String> roles;
 
-    public JwtResponse(String accessToken, Integer id, String name, String email, String password, String phone,
+    public JwtResponse(String accessToken, Long id, String name, String email, String password, String phone,
                        String address, Boolean gender, Boolean status, String image, LocalDate registerDate, List<String> roles) {
         this.token = accessToken;
         this.id = id;

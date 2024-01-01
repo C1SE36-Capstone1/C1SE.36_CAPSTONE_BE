@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IPetRepository extends JpaRepository<Pet, Integer> {
+public interface IPetRepository extends JpaRepository<Pet, Long> {
 
     List<Pet> findByStatusTrue();
 

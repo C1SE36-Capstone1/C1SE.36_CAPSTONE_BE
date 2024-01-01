@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface IRoleRepository extends JpaRepository<Role, Integer> {
+public interface IRoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByName(RoleName name);
 
     @Modifying
     @Query(value = "INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)", nativeQuery = true)
-    void insertUserRole(@Param("user_id") Integer userId, @Param("role_id") Integer roleId);
+    void insertUserRole(@Param("user_id") Long userId, @Param("role_id") Long roleId);
 }

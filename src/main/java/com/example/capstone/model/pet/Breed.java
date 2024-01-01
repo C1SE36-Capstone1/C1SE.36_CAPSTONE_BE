@@ -11,14 +11,14 @@ import javax.persistence.*;
 public class Breed {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer breedId;
+    private Long breedId;
     private String breedName;
 
-    public Integer getBreedId() {
+    public Long getBreedId() {
         return breedId;
     }
 
-    public void setBreedId(Integer breedId) {
+    public void setBreedId(Long breedId) {
         this.breedId = breedId;
     }
 

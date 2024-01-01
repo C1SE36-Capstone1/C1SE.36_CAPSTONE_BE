@@ -25,18 +25,18 @@ public class CartDetailService implements ICartDetailService {
     }
 
     @Override
-    public CartDetail checkAvailable(Integer product_id, Integer cart_id) {
+    public CartDetail checkAvailable(Long product_id, Long cart_id) {
         return this.cartDetailRepository.checkAvailable(product_id, cart_id).orElse(null);
     }
 
 
     @Override
-    public List<CartDetail> findByCartId(Integer id) {
+    public List<CartDetail> findByCartId(Long id) {
         return this.cartDetailRepository.findByCartId(id);
     }
 
     @Override
-    public void addProduct(Integer productId, Integer cartId) {
+    public void addProduct(Long productId, Long cartId) {
         CartDetail existingCartDetail = checkAvailable(productId, cartId);
         if (existingCartDetail != null) {
             existingCartDetail.setQuantity(existingCartDetail.getQuantity() + 1);
@@ -60,43 +60,28 @@ public class CartDetailService implements ICartDetailService {
     }
 
     @Override
-    public CartDetail findById(Integer id) {
+    public CartDetail findById(Long id) {
         return null;
     }
 
     @Override
     public CartDetail update(CartDetail cartDetail) {
         if (cartDetail != null) {
-            Integer cart_detail_id = cartDetail.getCartDetailId();
+            Long cart_detail_id = cartDetail.getCartDetailId();
+            Long product_id = cartDetail.getProduct().getProductId();
+            Integer quantity = cartDetail.getQuantity();
+            boolean status = cartDetail.isStatus();
+            Long cart_id = cartDetail.getCartId();
             if (cart_detail_id != null) {
-                cartDetailRepository.save(cartDetail);
-
-                Cart cart = cartService.findById(cartDetail.getCartId());
-                double totalAmount = calculateTotalAmount(cart.getCartId());
-                cart.setAmount(totalAmount);
-                cartService.updateCart(cart);
+                this.cartDetailRepository.updateCart(product_id, quantity, status, cart_id, cart_detail_id);
             }
         }
         return cartDetail;
     }
 
-    private double calculateTotalAmount(Integer cartId) {
-        List<CartDetail> cartDetails = findByCartId(cartId);
-
-        return cartDetails.stream()
-                .mapToDouble(detail -> {
-                    if (detail != null && detail.getProduct() != null && detail.getProduct().getPrice() != null) {
-                        return detail.getProduct().getPrice() * detail.getQuantity();
-                    } else {
-                        return 0.0;
-                    }
-                })
-                .sum();
-    }
-
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         cartDetailRepository.deleteById(id);
     }
 }

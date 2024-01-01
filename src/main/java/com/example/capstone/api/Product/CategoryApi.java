@@ -23,7 +23,7 @@ public class CategoryApi {
 
     //Get tại vị trí id
     @GetMapping("{id}")
-    public ResponseEntity<Category> getById(@PathVariable("id") Integer id){
+    public ResponseEntity<Category> getById(@PathVariable("id") Long id){
         if(!categoryRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }
@@ -40,7 +40,7 @@ public class CategoryApi {
 
     //Update tại vị trí id
     @PutMapping("{id}")
-    public ResponseEntity<Category> put(@RequestBody Category category, @PathVariable("id") Integer id){
+    public ResponseEntity<Category> put(@RequestBody Category category, @PathVariable("id") Long id){
         if(!id.equals(category.getCategoryId())){
             return  ResponseEntity.badRequest().build();
         }
@@ -52,7 +52,7 @@ public class CategoryApi {
 
     //Delete tại vị trí id
     @DeleteMapping("{id}")
-    public ResponseEntity<Category> delete(@PathVariable("id")Integer id){
+    public ResponseEntity<Category> delete(@PathVariable("id")Long id){
         if(!categoryRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }

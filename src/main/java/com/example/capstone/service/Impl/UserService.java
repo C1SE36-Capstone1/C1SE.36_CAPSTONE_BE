@@ -36,7 +36,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User findById(Integer id) {
+    public User findById(Long id) {
         return null;
     }
 
@@ -46,12 +46,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         userRepository.deleteUserId(id);
     }
 
     @Override
-    public void update(UserInfo userInfo, Integer id) {
+    public void update(UserInfo userInfo, Long id) {
 
     }
 

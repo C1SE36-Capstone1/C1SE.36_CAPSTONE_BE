@@ -36,8 +36,42 @@ public class FavoriteApi {
     @Autowired
     IProductRepository productRepository;
 
+    /**
+     * API: http://localhost:8080/api/favorites
+     * Show toàn bộ wishlist của người dùng đó
+     * Yêu cầu token
+     * */
+    @GetMapping("")
+    public ResponseEntity<?> getWishlist() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
+        }
+
+        String email = authentication.getName();
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (!userOptional.isPresent()) {
+            return new ResponseEntity<>("Không tìm thấy người dùng", HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+        List<Favorite> favorites = favoriteService.getFavoritesByUserId(user.getUserId());
+
+        if (favorites.isEmpty()) {
+            return new ResponseEntity<>("Danh sách yêu thích trống", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(favorites, HttpStatus.OK);
+    }
+
+    /**
+     * API: http://localhost:8080/api/favorites/add/{productId}
+     * Thêm vào wishlist
+     * Yêu cầu token
+     * */
     @GetMapping("/add/{productId}")
-    public ResponseEntity<?> addProductToFavorite(@PathVariable("productId") Integer productId) {
+    public ResponseEntity<?> addProductToFavorite(@PathVariable("productId") Long productId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
             return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
@@ -60,8 +94,12 @@ public class FavoriteApi {
         return new ResponseEntity<>("Sản phẩm đã được thêm vào danh sách yêu thích", HttpStatus.OK);
     }
 
+    /**
+     * API: http://localhost:8080/api/favorites/{favoriteId}
+     * Xóa wishlist đó
+     * */
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         if(!favoriteRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }

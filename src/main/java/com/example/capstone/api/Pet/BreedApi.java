@@ -25,7 +25,7 @@ public class BreedApi {
 
     //Get tại vị trí id
     @GetMapping("{id}")
-    public ResponseEntity<Breed> getById(@PathVariable("id") Integer id){
+    public ResponseEntity<Breed> getById(@PathVariable("id") Long id){
         if(!breedRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }
@@ -42,7 +42,7 @@ public class BreedApi {
 
     //Update tại vị trí id
     @PutMapping("{id}")
-    public ResponseEntity<Breed> put(@RequestBody Breed breed, @PathVariable("id") Integer id){
+    public ResponseEntity<Breed> put(@RequestBody Breed breed, @PathVariable("id") Long id){
         if(!id.equals(breed.getBreedId())){
             return  ResponseEntity.badRequest().build();
         }
@@ -54,7 +54,7 @@ public class BreedApi {
 
     //Delete tại vị trí id
     @DeleteMapping("{id}")
-    public ResponseEntity<Category> delete(@PathVariable("id")Integer id){
+    public ResponseEntity<Category> delete(@PathVariable("id")Long id){
         if(!breedRepository.existsById(id)){
             return ResponseEntity.notFound().build();
         }

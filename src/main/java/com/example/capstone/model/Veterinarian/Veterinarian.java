@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Veterinarian {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer vetId;
+    private Long vetId;
     private String vetName;
     private String vetLicenseNumber; // giấy phép thú y - định dạng bằng ảnh
     private String vetAddress;
