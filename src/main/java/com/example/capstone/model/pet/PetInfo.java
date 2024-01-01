@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class PetInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer petInfoId;
+    private Long petInfoId;
     private String color;
     private String size;
     private String health;

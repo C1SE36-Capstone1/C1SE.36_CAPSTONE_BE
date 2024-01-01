@@ -47,7 +47,7 @@ public class PaymentAPI {
         Set<CartDetail> cartDetails = new HashSet<>();
         this.cartService.update(cart);
         for (CartDetail cartDetail : cartDetailList) {
-            if (cartDetail.isStatus()) {
+            if (!cartDetail.isStatus()) {
                 totalAmount += cartDetail.getQuantity() * cartDetail.getProduct().getPrice();
                 cartDetails.add(cartDetail);
             }
@@ -139,6 +139,12 @@ public class PaymentAPI {
             this.emailService.emailProcess(cart, totalAmount, cartDetails);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/fail/{tnxRef}")
+    public ResponseEntity<?> transactionFail(@PathVariable("tnxRef") String tnxRef) {
+        this.paymentService.deleteByTnxRef(tnxRef);
+        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
 }

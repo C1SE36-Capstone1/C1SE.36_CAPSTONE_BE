@@ -10,32 +10,29 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 @SuppressWarnings("serial")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Table(name = "cartDetails")
 public class CartDetail implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cartDetailId;
+    private Long cartDetailId;
 
     @Min(1)
-    private int quantity;
+    private Integer quantity;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private Integer cartId;
+    private Long cartId;
 
-    private Boolean status;
+    private boolean status;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    public boolean isStatus() {
-        return true;
-    }
 }

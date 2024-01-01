@@ -5,12 +5,12 @@ import com.example.capstone.model.Cart.CartDetail;
 import java.util.List;
 
 public interface ICartDetailService extends IService<CartDetail> {
-    CartDetail checkAvailable(Integer product_id, Integer cart_id);
+    CartDetail checkAvailable(Long product_id, Long cart_id);
 
     CartDetail update(CartDetail cartDetail);
 
-    List<CartDetail> findByCartId(Integer id);
-    void addProduct(Integer productId, Integer cartId);
+    List<CartDetail> findByCartId(Long id);
+    void addProduct(Long productId, Long cartId);
 
     CartDetail updateQuantity(CartDetail detail);
 }

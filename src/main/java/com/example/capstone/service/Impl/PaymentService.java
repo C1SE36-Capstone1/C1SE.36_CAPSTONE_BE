@@ -36,7 +36,7 @@ public class PaymentService implements IPaymentService {
     }
 
     @Override
-    public Payment findById(Integer id) {
+    public Payment findById(Long id) {
         return null;
     }
 
@@ -46,7 +46,7 @@ public class PaymentService implements IPaymentService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
 
     }
 }

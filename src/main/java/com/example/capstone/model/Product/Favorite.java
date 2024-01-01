@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class Favorite implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer favoriteId;
+    private Long favoriteId;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")

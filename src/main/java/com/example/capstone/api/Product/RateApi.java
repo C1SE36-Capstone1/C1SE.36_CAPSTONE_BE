@@ -33,7 +33,7 @@ public class RateApi {
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<List<Rate>> findByProduct(@PathVariable("id") Integer id) {
+    public ResponseEntity<List<Rate>> findByProduct(@PathVariable("id") Long id) {
         if (!productRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -66,7 +66,7 @@ public class RateApi {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         if (!rateRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

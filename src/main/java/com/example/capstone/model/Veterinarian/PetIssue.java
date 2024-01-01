@@ -18,7 +18,7 @@ import java.util.Date;
 public class PetIssue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer issueId;
+    private Long issueId;
     private Date issueDate;
     private String issueStatus;
     private String issueDescription;

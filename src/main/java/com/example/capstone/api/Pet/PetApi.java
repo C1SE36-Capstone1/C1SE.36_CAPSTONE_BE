@@ -31,7 +31,7 @@ public class PetApi {
 
     // Liệt kê danh sách sản phẩm theo category
     @GetMapping("category/{id}")
-    public ResponseEntity<List<Pet>> getByBreed(@PathVariable("id") Integer id) {
+    public ResponseEntity<List<Pet>> getByBreed(@PathVariable("id") Long id) {
         if (!petRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -40,7 +40,7 @@ public class PetApi {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Pet> getById(@PathVariable("id") Integer id) {
+    public ResponseEntity<Pet> getById(@PathVariable("id") Long id) {
         if (!petRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -56,7 +56,7 @@ public class PetApi {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Pet> put(@PathVariable("id") Integer id, @RequestBody Pet pet) {
+    public ResponseEntity<Pet> put(@PathVariable("id") Long  id, @RequestBody Pet pet) {
         if (!id.equals(pet.getPetId())) {
             return ResponseEntity.badRequest().build();
         }
@@ -67,7 +67,7 @@ public class PetApi {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         if (!petRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

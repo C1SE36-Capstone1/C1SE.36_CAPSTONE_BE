@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IRateRepository extends JpaRepository<Rate, Integer> {
+public interface IRateRepository extends JpaRepository<Rate, Long> {
     List<Rate> findAllByOrderByIdDesc();
 
     List<Rate> findByProductOrderByIdDesc(Product product);

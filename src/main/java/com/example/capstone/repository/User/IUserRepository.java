@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface IUserRepository extends JpaRepository<User, Integer> {
+public interface IUserRepository extends JpaRepository<User, Long> {
     List<User> findByStatusTrue();
 
     Boolean existsByEmail(String email);
@@ -29,7 +29,7 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
 
     @Modifying
     @Query(value = "UPDATE users SET address = :address, email = :email, gender = :gender, image = :image, name = :name, cart = :cart_id, phone = :phone, birthdate = :birthdate WHERE user_id = :user_id", nativeQuery = true)
-    void updateUser(@Param("user_id") Integer user_id,
+    void updateUser(@Param("user_id") Long user_id,
                     @Param("address") String address,
                     @Param("email") String email,
                     @Param("gender") Boolean gender,
@@ -41,7 +41,7 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
 
     @Modifying
     @Query(value = "update users set status = false where user_id = :id", nativeQuery = true)
-    void deleteUserId(@Param("id") Integer id);
+    void deleteUserId(@Param("id") Long id);
 
     @Modifying
     @Query(value = "INSERT INTO users (address, code, email, birthdate, gender, image, name, register_date, password, phone, status,token, cart_id) VALUES (:address, :code, :email,:birthdate, :gender, :image, :name, :register_date, :password, :phone,:status, :token, :cart_id)",nativeQuery = true)
@@ -57,7 +57,7 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
                     @Param("image") String image,
                     @Param("status") Boolean status,
                     @Param("token") String token,
-                    @Param("cart_id") Integer cart_id
+                    @Param("cart_id") Long cart_id
                     );
 
 

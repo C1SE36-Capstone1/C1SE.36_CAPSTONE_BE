@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Rate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private Double rating;
     private String comment;
     private LocalDate rateDate;

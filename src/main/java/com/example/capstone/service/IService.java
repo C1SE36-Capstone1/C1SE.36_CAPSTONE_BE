@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 public interface IService <T>{
     Page<T> findAll(Pageable pageable);
 
-    T findById(Integer id);
+    T findById(Long id);
 
     T update(T t);
 
-    void deleteById(Integer id);
+    void deleteById(Long id);
 }

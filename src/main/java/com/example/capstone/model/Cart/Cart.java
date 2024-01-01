@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cartId;
+    private Long cartId;
     private Double Amount;
     private String address;
     private String phone;
