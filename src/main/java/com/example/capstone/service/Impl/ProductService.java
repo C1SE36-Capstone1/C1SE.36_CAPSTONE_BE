@@ -60,6 +60,7 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public Product createProduct(ProductCreateDTO dto) {
+        LocalDate date = LocalDate.now();
         Category category = categoryService.findByCategoryName(dto.getCategory());
         if (category == null) {
             throw new EntityNotFoundException("Category with name " + dto.getCategory() + " was not found");
@@ -69,11 +70,14 @@ public class ProductService implements IProductService {
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
         product.setQuantity(dto.getQuantity());
+        product.setEnteredDate(date);
         product.setDescription(dto.getDescription());
         product.setImage(dto.getImage());
         product.setExpireDate(dto.getExpireDate());
         product.setCode(dto.getCode());
+        product.setDiscount(0);
         product.setCategory(category);
+        product.setSold(0);
         product.setStatus(true); // Giả sử sản phẩm luôn được đặt là 'true' khi tạo mới
 
         return productRepository.save(product);
@@ -91,7 +95,6 @@ public class ProductService implements IProductService {
         productRepository.updateProduct(
                 productCreateDTO.getExpireDate(),
                 productCreateDTO.isStatus(),
-                productCreateDTO.getCode(),
                 productCreateDTO.getImage(),
                 productCreateDTO.getName(),
                 productCreateDTO.getDescription(),

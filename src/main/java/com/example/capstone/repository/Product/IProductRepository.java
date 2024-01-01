@@ -89,25 +89,10 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "insert into products(expire_date, status, code, image, name, price, quantity, category_id)" +
-            " values(:expire_date, :status, :code, :image, :name, :price, :quantity, :category_id)",
-            nativeQuery = true)
-    void saveProductNative(@Param("expire_date") Date expire_date,
-                           @Param("status") boolean status,
-                           @Param("code") String code,
-                           @Param("image") String product_img,
-                           @Param("name") String product_name,
-                           @Param("price") Double price,
-                           @Param("quantity") Integer product_quantity,
-                           @Param("category_id") String category_id);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE products SET expire_date = :expire_date, status = :status,description = :description, code = :code, image = :image, name = :name, "+
+    @Query(value = "UPDATE products SET expire_date = :expire_date, status = :status,description = :description, image = :image, name = :name, "+
             "price =  :price, quantity = :quantity, category_id = :category_id WHERE product_id = :product_id",nativeQuery = true)
     void updateProduct(@Param("expire_date") Date expire_date,
                        @Param("status") boolean status,
-                       @Param("code") String code,
                        @Param("image") String image,
                        @Param("name") String name,
                        @Param("description") String description,
@@ -118,14 +103,6 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
     );
 
     List<Product> findByName(String name);
-
-    @Transactional
-    @Query(value = "select  name from products where name = ?1 and product_id <> ?2", nativeQuery = true)
-    boolean existsProductName2(String product_name, Long product_id);
-
-    @Transactional
-    @Query(value = "SELECT * FROM product WHERE product_id = :id", nativeQuery = true)
-    Optional<Product> findByIdNative(@Param("id") Long id);
 
     @Transactional
     @Query(value = "select  name from products where name = :name", nativeQuery = true)

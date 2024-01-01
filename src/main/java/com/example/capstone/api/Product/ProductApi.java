@@ -127,6 +127,30 @@ public class ProductApi {
     }
 
 
+    /**
+     * MAP: PATCH
+     * API: http://localhost:8080/api/products/update
+
+
+    {
+    "productId": {product_id},
+    "code": "PD-0053",
+    "name": "test",
+    "quantity": 100,
+    "price": 100000.0,
+    "discount": null,
+    "image": "https://firebasestorage.googleapis.com/v0/b/capstone-1-398205.appspot.com/o/IMG%2Fpexels-mithul-varshan-2318990.jpg?alt=media&token=3f5ff189-53a7-40de-94c2-033154592b0e",
+    "description": "Introducing our new Pet Paradise Playhouse! Pamper your furry friend with the ultimate pet haven. This beautifully designed playhouse is the perfect retreat for your beloved pets, whether they are cats, dogs, or even small critters. Crafted with high-quality materials, the Pet Paradise Playhouse is both durable and stylish.The spacious interior offers plenty of room for your pet to relax, play, and unwind. With cozy nooks for lounging, scratching posts for the feline friends, and engaging toys to keep them entertained, your pets will never want to leave their little piece of paradise.The Pet Paradise Playhouse is also easy to assemble, making it a hassle-free addition to your home. Its neutral color scheme and modern design will seamlessly blend into any room decor. Give your pets the luxury they deserve and create a space they'll adore with our Pet Paradise Playhouse. Order yours today and watch your furry companion enjoy their own personal sanctuary!",
+    "enteredDate": null,
+    "status": true,
+    "sold": null,
+    "expireDate": "2024-07-01",
+    "user": null,
+    "category": "Treats"
+    }
+
+
+*/
     @PatchMapping("/update")
     public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductCreateDTO productCreateDTO) {
         // Kiểm tra xem sản phẩm có tồn tại không
@@ -147,30 +171,20 @@ public class ProductApi {
         }
 
         try {
-            // Tiến hành cập nhật sản phẩm
-//            productService.updateProduct(
-//                    productCreateDTO.getExpireDate(),
-//                    productCreateDTO.isStatus(),
-//                    productCreateDTO.getProductCode(),
-//                    productCreateDTO.getProductImg(),
-//                    productCreateDTO.getProductName(),
-//                    productCreateDTO.getProductPrice(),
-//                    productCreateDTO.getProductQuantity(),
-//                    category.getCategoryId(),
-//                    productCreateDTO.getProductID()
-//            );
-
             productService.updateProduct(productCreateDTO);
-
             return ResponseEntity.ok().body(new ResponseToClient("Cập nhật sản phẩm thành công."));
         } catch (DataIntegrityViolationException e) {
-            // Xử lý ngoại lệ khi có vấn đề về tính toàn vẹn dữ liệu
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseToClient("Dữ liệu không hợp lệ, không thể cập nhật sản phẩm."));
         } catch (Exception e) {
-            // Xử lý các ngoại lệ khác
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseToClient("Có lỗi xảy ra trong quá trình cập nhật sản phẩm: " + e.getMessage()));
         }
     }
+
+
+    /**
+     * MAP: DELETE
+     * API: http://localhost:8080/api/products/{product_id}
+     */
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
