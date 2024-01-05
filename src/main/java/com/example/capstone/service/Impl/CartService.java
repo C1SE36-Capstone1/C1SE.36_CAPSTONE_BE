@@ -43,8 +43,7 @@ public class CartService implements ICartService {
 
     @Override
     public Cart findById(Long id) {
-        Optional<Cart> cartOptional = cartRepository.findById(id);
-        return cartOptional.orElse(null);
+        return this.cartRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -54,12 +53,6 @@ public class CartService implements ICartService {
         String phone = cart.getPhone();
         this.cartRepository.updateCart(id, address, phone);
         return cart;
-    }
-
-    public void updateCart(Cart cart) {
-        if (cart != null && cart.getCartId() != null) {
-            cartRepository.save(cart);
-        }
     }
 
     @Override

@@ -27,8 +27,7 @@ public interface ICartDetailRepository extends JpaRepository<CartDetail, Long> {
     Optional<CartDetail> checkAvailable(@Param("product_id") Long id, @Param("cart_id") Long cart_id);
 
     @Modifying
-    @Query(value = "INSERT INTO cart_details (product_id, quantity, status, cart_id) values (:product_id, 1,false, :cart_id)",
-            nativeQuery = true)
+    @Query(value = "INSERT INTO cart_details (product_id, quantity, status, cart_id) values (:product_id, 1, false, :cart_id)",nativeQuery = true)
     void insertCart(@Param("product_id") Long product_id, @Param("cart_id") Long cart_id);
 
 }

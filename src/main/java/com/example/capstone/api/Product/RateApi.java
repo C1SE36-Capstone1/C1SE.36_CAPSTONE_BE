@@ -12,23 +12,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("api/rates")
 public class RateApi {
     @Autowired
-    IRateRepository rateRepository;
+    private IRateRepository rateRepository;
 
     @Autowired
-    IUserRepository userRepository;
-
+    private IUserRepository userRepository;
 
     @Autowired
-    IProductRepository productRepository;
+    private IProductRepository productRepository;
 
     @GetMapping
-    public ResponseEntity<List<Rate>> findAll(){
+    public ResponseEntity<List<Rate>> findAll() {
         return ResponseEntity.ok(rateRepository.findAllByOrderByIdDesc());
     }
 
@@ -47,31 +47,35 @@ public class RateApi {
             return new ResponseEntity<>("Người dùng chưa đăng nhập", HttpStatus.FORBIDDEN);
         }
 
-        String email = authentication.getName();
-        if (!userRepository.existsById(rate.getUser().getUserId())) {
-            return ResponseEntity.notFound().build();
+        if (!userRepository.existsById(rate.getUser().getUserId()) ||
+                !productRepository.existsById(rate.getProduct().getProductId())) {
+            return new ResponseEntity<>("Người dùng hoặc sản phẩm không tồn tại", HttpStatus.NOT_FOUND);
         }
-        if (!productRepository.existsById(rate.getProduct().getProductId())) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(rateRepository.save(rate));
+
+        Rate savedRate = rateRepository.save(rate);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedRate);
     }
 
-    @PutMapping
-    public ResponseEntity<Rate> put(@RequestBody Rate rate) {
-        if (!rateRepository.existsById(rate.getId())) {
-            return ResponseEntity.notFound().build();
+    @PutMapping("{id}")
+    public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody Rate rate) {
+        if (!id.equals(rate.getId())) {
+            return ResponseEntity.badRequest().body("ID không khớp");
         }
-        return ResponseEntity.ok(rateRepository.save(rate));
+        return rateRepository.findById(id)
+                .map(existingRate -> {
+                    rateRepository.save(rate);
+                    return ResponseEntity.ok(rate);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        if (!rateRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        rateRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        return rateRepository.findById(id)
+                .map(rate -> {
+                    rateRepository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 }

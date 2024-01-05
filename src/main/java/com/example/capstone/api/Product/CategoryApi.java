@@ -3,60 +3,63 @@ package com.example.capstone.api.Product;
 import com.example.capstone.model.Product.Category;
 import com.example.capstone.repository.Product.ICategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("api/categories")
 public class CategoryApi {
     @Autowired
-    ICategoryRepository categoryRepository;
+    private ICategoryRepository categoryRepository;
 
-    //Xuất toàn bộ dữ liệu
     @GetMapping
-    public ResponseEntity<List<Category>> getAll(){
+    public ResponseEntity<List<Category>> getAll() {
         return ResponseEntity.ok(categoryRepository.findAll());
     }
 
-    //Get tại vị trí id
     @GetMapping("{id}")
-    public ResponseEntity<Category> getById(@PathVariable("id") Long id){
-        if(!categoryRepository.existsById(id)){
+    public ResponseEntity<Category> getById(@PathVariable("id") Long id) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (!category.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(categoryRepository.findById(id).get());
+        return ResponseEntity.ok(category.get());
     }
 
-        @PostMapping
-        public ResponseEntity<Category> post(@RequestBody Category category){
-            if(categoryRepository.existsById(category.getCategoryId())){
-                return ResponseEntity.badRequest().build() ;
-            }
-            return ResponseEntity.ok(categoryRepository.save(category));
+    @PostMapping
+    public ResponseEntity<?> post(@RequestBody Category category) {
+        if (category.getCategoryId() != null && categoryRepository.existsById(category.getCategoryId())) {
+            return ResponseEntity.badRequest().body("Category đã tồn tại với ID này");
         }
+        Category savedCategory = categoryRepository.save(category);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
+    }
 
-    //Update tại vị trí id
     @PutMapping("{id}")
-    public ResponseEntity<Category> put(@RequestBody Category category, @PathVariable("id") Long id){
-        if(!id.equals(category.getCategoryId())){
-            return  ResponseEntity.badRequest().build();
+    public ResponseEntity<?> put(@RequestBody Category category, @PathVariable("id") Long id) {
+        if (!id.equals(category.getCategoryId())) {
+            return ResponseEntity.badRequest().body("ID trong URL không khớp với ID của Category");
         }
-        if(!categoryRepository.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return categoryRepository.findById(id)
+                .map(existingCategory -> {
+                    categoryRepository.save(category);
+                    return ResponseEntity.ok(category);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //Delete tại vị trí id
     @DeleteMapping("{id}")
-    public ResponseEntity<Category> delete(@PathVariable("id")Long id){
-        if(!categoryRepository.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        categoryRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        return categoryRepository.findById(id)
+                .map(category -> {
+                    categoryRepository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

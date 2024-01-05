@@ -11,6 +11,7 @@ import com.example.capstone.repository.pet.IPetRepository;
 import com.example.capstone.service.Impl.CartDetailService;
 import com.example.capstone.service.Impl.CartService;
 import com.example.capstone.service.Impl.EmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -163,15 +164,16 @@ public class CartDetailApi {
 
     @PutMapping("/checkout")
     public ResponseEntity<CartWithDetail> checkout(@RequestBody CartWithDetail cartWithDetail) {
-        Cart cart = cartWithDetail.getCart();
+        Cart cart = this.cartService.findById(cartWithDetail.getCart().getCartId());
         List<CartDetail> cartDetailList = cartWithDetail.getCartDetailList();
         List<CartDetail> details = new ArrayList<>();
-        int totalAmount = 0;
+        long totalAmount = 0;
         this.cartService.update(cart);
         for (CartDetail cartDetail : cartDetailList) {
             if (!cartDetail.isStatus()) {
                 totalAmount += cartDetail.getQuantity() * cartDetail.getProduct().getPrice();
                 details.add(cartDetail);
+                cartDetail.setStatus(true);
             }
             this.cartDetailService.update(cartDetail);
         }
@@ -180,5 +182,4 @@ public class CartDetailApi {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

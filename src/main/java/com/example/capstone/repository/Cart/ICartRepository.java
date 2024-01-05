@@ -20,14 +20,16 @@ public interface ICartRepository extends JpaRepository<Cart, Long> {
     void updateCartAmount(@Param("cart_id") Long cartId,@Param("amount") Double amount);
 
     @Query(nativeQuery = true,
-            value = "SELECT c.cart_id, c.amount, c.address, c.phone FROM carts c JOIN users u USING (cart_id) WHERE u.email = :email")
+            value = "SELECT c.cart_id, u.name, u.email, c.amount, c.address, c.phone FROM carts c " +
+                    "JOIN users u USING (cart_id) WHERE u.email = :email")
     Optional<Cart> findCartByEmail(@Param("email") String email);
 
     @Modifying
     @Query(value = "INSERT INTO carts (address, phone, amount) VALUES(:address, :phone, :amount)",nativeQuery = true)
     void insertCart(@Param("address") String address, @Param("phone") String phone, @Param("amount") Double amount);
 
-    @Query(value = "SELECT cart_id, address, phone, amount FROM carts ORDER BY cart_id DESC LIMIT 1",nativeQuery = true)
+    @Query(value = "SELECT c.cart_id, u.name, u.email, c.address, c.phone, c.amount FROM carts c " +
+            "JOIN users u USING (cart_id) ORDER BY c.cart_id DESC LIMIT 1",nativeQuery = true)
     Optional<Cart> findLastCart();
 
     @Modifying
