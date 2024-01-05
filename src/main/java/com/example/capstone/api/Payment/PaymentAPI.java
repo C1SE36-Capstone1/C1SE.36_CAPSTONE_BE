@@ -129,7 +129,7 @@ public class PaymentAPI {
         if (!payment.isPaid()) {
             payment.setIsPaid(true);
             this.paymentService.update(payment);
-            int totalAmount = payment.getTotalAmount();
+            long totalAmount = payment.getTotalAmount();
             Cart cart = this.cartService.findById(payment.getCartId());
             List<CartDetail> cartDetails = new ArrayList<>(payment.getCartDetails());
             for (CartDetail cartDetail : cartDetails) {

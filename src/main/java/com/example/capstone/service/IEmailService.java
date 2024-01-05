@@ -6,5 +6,5 @@ import com.example.capstone.model.Cart.CartDetail;
 import java.util.List;
 
 public interface IEmailService {
-    void emailProcess(Cart cart, int totalAmount, List<CartDetail> details);
+    void emailProcess(Cart cart, long totalAmount, List<CartDetail> details);
 }

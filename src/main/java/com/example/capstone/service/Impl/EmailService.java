@@ -38,7 +38,7 @@ public class EmailService  implements IEmailService {
     private String sender;
 
     @Async
-    public void emailProcess(Cart cart, int totalAmount, List<CartDetail> details) {
+    public void emailProcess(Cart cart, long totalAmount, List<CartDetail> details) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             public void prepare(MimeMessage mimeMessage) throws Exception {
                 MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -51,7 +51,7 @@ public class EmailService  implements IEmailService {
 
                 Context context = new Context();
                 context.setVariable("receiverName", cart.getUser().getName());
-                context.setVariable("receiverAddress", cart.getUser().getAddress());
+                context.setVariable("receiverAddress", cart.getAddress());
                 context.setVariable("totalAmount", numberFormat.format(totalAmount));
                 context.setVariable("cartDetails", details);
                 context.setVariable("locale", new Locale("vi", "VN"));

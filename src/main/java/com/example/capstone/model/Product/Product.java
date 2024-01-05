@@ -52,6 +52,8 @@ public class Product implements Serializable {
                 + enteredDate + ", status=" + status + ", sold=" + sold + ", category=" + category + "]";
     }
 
+
+
     public Product(ProductCreateDTO productCreateDTO, CategoryService categoryService){
         this.name = productCreateDTO.getName();
         this.price = productCreateDTO.getPrice();
